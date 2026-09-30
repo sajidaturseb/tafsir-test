@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="tt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Әл-Фатиха сүрәсе буенча кабатлау һәм белемне тикшерү">
+  <title>Әл-Фатиха сүрәсе буенча белемне тикшерү</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b4d43'/%3E%3Cpath d='M14 18c8-3 14-1 18 3 4-4 10-6 18-3v30c-8-3-14-1-18 3-4-4-10-6-18-3z' fill='none' stroke='%23e5b44f' stroke-width='4'/%3E%3Cpath d='M32 21v30' stroke='%23e5b44f' stroke-width='3'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --green-950:#073c34; --green-900:#0a4b41; --green-800:#0d6456;
+      --green-100:#e8f4ef; --green-50:#f3f9f6;
+      --gold:#d5a02d; --gold-2:#edc768; --gold-soft:#fff5d8;
+      --paper:#fffdf8; --ink:#17332d; --muted:#657873; --line:#d7e4df;
+      --danger:#9c2f2f; --danger-soft:#fff0ed; --success:#0c7b62; --success-soft:#e8f7f1; --shadow:0 18px 60px rgba(7,60,52,.12);
+    }
+    *{box-sizing:border-box}
+    html{font-size:16px}
+    body{margin:0;min-height:100vh;overflow-x:hidden;color:var(--ink);font-family:Arial,"Noto Sans",sans-serif;line-height:1.5;background:
+      radial-gradient(circle at 8% 4%,rgba(213,160,45,.16),transparent 24rem),
+      linear-gradient(145deg,#f7fbf8 0%,#edf7f3 60%,#fbf8eb 100%)}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:linear-gradient(30deg,transparent 24%,rgba(13,100,86,.08) 25%,transparent 26%),linear-gradient(150deg,transparent 24%,rgba(13,100,86,.08) 25%,transparent 26%);background-size:48px 84px}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .app{position:relative;width:min(1180px,calc(100% - 32px));margin:0 auto;padding:14px 0 42px}
+    .topbar{min-height:80px;background:var(--green-900);color:white;border-radius:24px 24px 8px 8px;border-bottom:5px solid var(--gold);display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 22px;box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:13px}
+    .brand-mark{width:48px;height:48px;border:1px solid rgba(237,199,104,.65);border-radius:14px;display:grid;place-items:center;color:var(--gold-2);font-size:1.35rem}
+    .brand strong{display:block;font:700 1.45rem Georgia,"Times New Roman",serif}
+    .brand small{display:block;font-size:.8rem;font-weight:800;letter-spacing:.04em;opacity:.9}
+    .course-pill{border:1px solid rgba(237,199,104,.55);border-radius:999px;padding:8px 14px;font-weight:800;font-size:.85rem;white-space:nowrap}
+    .stagebar{padding:15px 22px 18px;background:rgba(255,255,255,.88);border:1px solid var(--line);border-top:0}
+    .stage-row{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-weight:700;font-size:.9rem}
+    .track{height:9px;margin-top:10px;border-radius:999px;background:#dce9e4;overflow:hidden}
+    .track span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2),var(--green-800));transition:width .3s ease}
+    .surface{background:rgba(255,253,248,.97);border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:8px 8px 24px 24px;box-shadow:var(--shadow);min-height:610px;padding:clamp(26px,5vw,58px)}
+    .hidden{display:none!important}
+    .eyebrow{display:flex;align-items:center;gap:12px;color:var(--green-800);font-size:.9rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin:0 0 18px}
+    .eyebrow::before{content:"";width:34px;height:3px;background:var(--gold);border-radius:3px}
+    h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.13;color:var(--green-950);margin:0}
+    h1{font-size:clamp(2.35rem,5.4vw,4.4rem)}
+    h2{font-size:clamp(1.65rem,3.4vw,2.65rem)}
+    .lead{color:var(--muted);font-size:1.1rem;max-width:780px;margin:22px 0 0}
+    .primary,.secondary{min-height:54px;border-radius:14px;padding:12px 22px;font-weight:900;border:1px solid transparent;transition:.18s ease}
+    .primary{background:linear-gradient(135deg,var(--green-900),#14806d);color:white;box-shadow:0 9px 22px rgba(10,75,65,.18)}
+    .primary:hover{transform:translateY(-1px);background:linear-gradient(135deg,#073c34,#0d6456)}
+    .secondary{background:white;color:var(--green-900);border-color:#abc7be}
+    .secondary:hover{background:var(--green-50)}
+    .primary:disabled{opacity:.42;cursor:not-allowed;transform:none}
+    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:30px;flex-wrap:wrap}
+    .dashboard{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(310px,.78fr);gap:34px}
+    .surah-list{margin-top:32px;display:grid;gap:14px}
+    .surah-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;border:1px solid var(--line);border-radius:18px;padding:18px;background:white;text-decoration:none;color:inherit;transition:.18s ease}
+    .surah-card:hover{border-color:#9dbeb4;transform:translateY(-2px);box-shadow:0 12px 30px rgba(7,60,52,.08)}
+    .num{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:var(--green-900);color:white;font-weight:900;font-size:1.25rem}
+    .surah-card strong{display:block;font-size:1.12rem}.surah-card span{color:var(--muted);font-size:.92rem}
+    .go{color:var(--green-800);font-weight:900}
+    .teacher{border:1px solid var(--line);border-radius:22px;background:white;padding:26px;align-self:start;box-shadow:0 16px 38px rgba(7,60,52,.07)}
+    .teacher h2{font-size:2rem;margin-bottom:10px}.teacher p{color:var(--muted);margin:0 0 22px}
+    label.field{display:grid;gap:8px;margin-top:16px;color:var(--green-950);font-weight:900}
+    input,select,textarea{width:100%;border:1px solid #bdd0ca;border-radius:13px;background:white;color:var(--ink);padding:13px 15px;outline:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--green-800);box-shadow:0 0 0 4px rgba(13,100,86,.11)}
+    textarea{min-height:170px;resize:vertical}
+    .teacher .primary{width:100%;margin-top:20px}
+    .copy-note{min-height:1.5em;color:var(--green-800);font-weight:800;text-align:center;margin:10px 0 0}
+    .intro-copy{max-width:920px}.summary{margin-top:32px;padding:20px 24px;border-left:5px solid var(--gold);background:linear-gradient(90deg,var(--gold-soft),#fffaf0);border-radius:0 16px 16px 0;font:1.05rem Georgia,"Times New Roman",serif}
+    .review-wrap{max-width:920px;margin:0 auto}
+    .counter{color:var(--muted);font-weight:800;margin-left:auto}
+    .review-question{margin-top:22px;padding:26px;border:1px solid var(--line);border-radius:20px;background:white}
+    .review-question h2{margin-bottom:8px}.think{color:var(--muted);margin:0}
+    .answer-card{margin-top:20px;padding:21px 23px;border-radius:16px;background:var(--green-50);border:1px solid #bed9d0}
+    .answer-card strong{display:block;color:var(--green-800);margin-bottom:8px}.answer-card p{margin:0;font-size:1.04rem}
+    .identity{max-width:760px;margin:0 auto}.identity-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px}.hint{color:var(--muted);font-size:.92rem;margin-top:12px}.error{color:var(--danger);font-weight:800;margin-top:12px}
+    .quiz{max-width:1020px;margin:0 auto}.question-title{font-size:clamp(1.7rem,3.3vw,2.75rem);margin-bottom:26px}.options{display:grid;gap:13px}.option{display:grid;grid-template-columns:46px 1fr;align-items:center;gap:13px;border:1px solid var(--line);border-radius:17px;background:white;padding:15px 18px;font-weight:700;cursor:pointer;transition:.15s ease}.option:hover{border-color:#93b7ac;background:#fbfefa}.option:has(input:checked){border-color:var(--green-800);background:var(--green-50);box-shadow:inset 5px 0 0 var(--green-800)}.option input{position:absolute;opacity:0}.letter{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#e9f4f0;color:var(--green-900);font-weight:900}.option.correct{border-color:#57aa92;background:var(--success-soft);box-shadow:none}.option.correct .letter{background:var(--success);color:white}.option.wrong{border-color:#d77f75;background:var(--danger-soft);box-shadow:none}.option.wrong .letter{background:#b84b43;color:white}.option.locked{cursor:default}.option.locked:hover{transform:none}.feedback{margin-top:24px;padding:20px 23px;border-radius:17px;border:1px solid}.feedback.correct{background:var(--success-soft);border-color:#aad7c9;color:#0b5e4c}.feedback.wrong{background:var(--danger-soft);border-color:#efb9b2;color:#7e2d28}.feedback strong{display:block;font-size:1.08rem;margin-bottom:7px}.feedback p{margin:0}.open-note{color:var(--muted);margin:-12px 0 18px}
+    .result{max-width:980px;margin:0 auto}.result-head{text-align:left}.result-head .eyebrow{justify-content:flex-start}.result-head h1{max-width:800px}.result-meta{color:var(--muted);font-size:1.05rem;margin:18px 0 0}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}.score-card{border:1px solid var(--line);background:#f8fbfa;border-radius:18px;padding:20px 22px}.score-card strong{display:block;font:700 1.8rem Georgia,"Times New Roman",serif;color:var(--green-900)}.score-card span{color:var(--muted);font-weight:800}.done-card{margin-top:26px;border:1px solid var(--line);background:white;border-radius:18px;padding:20px;text-align:left}.done-card strong{color:var(--green-900)}.action-step{margin-top:26px;padding:20px 23px;border-radius:17px;background:var(--gold-soft);color:#654d1a}.action-step strong{color:#554014}.result .actions{justify-content:flex-end}
+    @media(max-width:820px){.app{width:min(100% - 18px,1180px);padding-top:8px}.dashboard{grid-template-columns:1fr}.teacher{order:-1}.surface{padding:26px 18px;min-height:560px}.topbar{padding:12px 14px}.brand strong{font-size:1.15rem}.brand small{font-size:.7rem}.course-pill{font-size:.72rem;padding:7px 9px}.identity-grid{grid-template-columns:1fr}.surah-card{grid-template-columns:auto 1fr}.go{display:none}.option{grid-template-columns:40px 1fr;padding:13px}.score-grid{grid-template-columns:1fr}.actions>*{width:100%}.stagebar{padding:12px 14px 15px}}
+    @media(max-width:480px){.app{width:100%;padding-top:0}.topbar{border-radius:0;padding:11px 12px}.brand-mark{width:40px;height:40px;border-radius:11px}.brand strong{font-size:1.05rem}.brand small{font-size:.66rem}.course-pill{display:none}.stagebar{border-left:0;border-right:0}.surface{border-left:0;border-right:0;border-radius:0;padding:24px 16px}.summary{padding:17px 18px}.review-question{padding:20px 17px}.teacher{padding:21px 17px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><div><strong>Тәфсир дәресләре</strong><small>30 НЧЫ ҖҮЗ ҺӘМ ӘЛ-ФАТИХА</small></div></div>
+      <span class="course-pill" id="coursePill">ӘЛ-ФАТИХА ҮРНӘГЕ</span>
+    </header>
+
+    <div id="stagebar" class="stagebar hidden">
+      <div class="stage-row"><span id="stageName">Дәрес белән танышу</span><span id="stageCount">1 / 5</span></div>
+      <div class="track" aria-hidden="true"><span id="stageProgress"></span></div>
+    </div>
+
+    <section id="home" class="surface">
+      <div class="dashboard">
+        <div>
+          <p class="eyebrow">Тәфсир буенча белемне ныгыту</p>
+          <h1>Сүрәләр буенча кабатлау һәм тест</h1>
+          <p class="lead">Укучы башта сораулар аша материалны искә төшерә, җавапларын тикшерә, аннары ябык тест һәм бер ачык гамәли сорау үти.</p>
+          <div class="surah-list">
+            <a id="fatihaCard" class="surah-card" href="?sura=fatiha">
+              <span class="num">1</span><span><strong>Әл-Фатиха сүрәсе</strong><span>Аллаһны олылау, Аңа гына гыйбадәт кылу һәм туры юл сорап дога кылу</span></span><span class="go">Ачарга</span>
+            </a>
+          </div>
+        </div>
+        <aside class="teacher">
+          <p class="eyebrow">Укытучы өчен</p>
+          <h2>Сүрә сылтамасы</h2>
+          <p>Сүрәне һәм төркемне сайлап, укучыга әзер сылтама җибәрегез.</p>
+          <label class="field">Сүрә<select id="teacherSurah"><option value="fatiha">Әл-Фатиха сүрәсе</option></select></label>
+          <label class="field">Төркем<input id="teacherGroup" type="text" placeholder="Мәсәлән, 2 нче төркем"></label>
+          <button id="copyLinkBtn" class="primary">Сылтаманы күчерергә</button>
+          <input id="teacherLink" class="hidden" type="text" readonly aria-label="Әзер сылтама">
+          <p id="copyNote" class="copy-note" role="status"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="intro" class="surface hidden">
+      <div class="intro-copy">
+        <p class="eyebrow">Дәрес белән танышу</p>
+        <h1>Әл-Фатиха сүрәсе</h1>
+        <p class="lead">Аллаһны олылау, Аңа гына гыйбадәт кылу һәм туры юл сорап дога кылу.</p>
+        <div class="summary">Бу эштә башта 10 сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне һәм төркемегезне язып, тестны үтисез.</div>
+        <div class="actions"><button id="startReviewBtn" class="primary">Кабатлауны башларга</button></div>
+      </div>
+    </section>
+
+    <section id="review" class="surface hidden">
+      <div class="review-wrap">
+        <div class="eyebrow"><span>Сораулар аша кабатлау</span><span id="reviewCounter" class="counter">1 / 10</span></div>
+        <div class="review-question">
+          <h2 id="reviewQuestion"></h2>
+          <p class="think">Башта җавапны үзегез уйлап карагыз. Аннары әзер җавап белән чагыштырыгыз.</p>
+          <div id="reviewAnswer" class="answer-card hidden" aria-live="polite"><strong>Җавап</strong><p id="reviewAnswerText"></p></div>
+        </div>
+        <div class="actions">
+          <button id="showAnswerBtn" class="primary">Җавапны күрсәтергә</button>
+          <button id="nextReviewBtn" class="primary hidden">Киләсе сорау</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="identity" class="surface hidden">
+      <div class="identity">
+        <p class="eyebrow">Укучы турында мәгълүмат</p>
+        <h1>Тестны кем үтә?</h1>
+        <p class="lead">Нәтиҗә кемгә караганын белү өчен исем-фамилиягезне һәм төркемегезне языгыз.</p>
+        <div class="identity-grid">
+          <label class="field">Исем һәм фамилия<input id="studentName" type="text" autocomplete="name" placeholder="Исем һәм фамилия" required></label>
+          <label class="field">Төркем<input id="studentGroup" type="text" placeholder="Мәсәлән, 2 нче төркем" required></label>
+        </div>
+        <p class="hint">Ике юлны да тутыргач кына тест башлана.</p>
+        <p id="identityError" class="error hidden" role="alert"></p>
+        <div class="actions"><button id="startTestBtn" class="primary">Тестны башларга</button></div>
+      </div>
+    </section>
+
+    <section id="quiz" class="surface hidden">
+      <div class="quiz">
+        <p id="quizEyebrow" class="eyebrow">Белем · 1 нче сорау</p>
+        <h2 id="quizQuestion" class="question-title"></h2>
+        <div id="quizOptions" class="options"></div>
+        <div id="quizFeedback" class="feedback hidden" aria-live="polite"><strong id="feedbackTitle"></strong><p id="feedbackText"></p></div>
+        <div id="openWrap" class="hidden">
+          <p class="open-note">Җавабыгызны үз сүзләрегез белән языгыз.</p>
+          <textarea id="openAnswer" maxlength="1200" placeholder="Күркәм гамәл турында җавабыгыз..."></textarea>
+        </div>
+        <p id="quizError" class="error hidden" role="alert"></p>
+        <div class="actions"><button id="nextQuizBtn" class="primary">Алга</button></div>
+      </div>
+    </section>
+
+    <section id="result" class="surface hidden">
+      <div class="result">
+        <div class="result-head">
+          <p class="eyebrow">Дәрес тәмам</p>
+          <h1>Мә шәә Аллаһ, син дәресне үттең!</h1>
+          <p id="resultText" class="result-meta"></p>
+        </div>
+        <div class="score-grid">
+          <div class="score-card"><strong id="scoreText">0 / 10</strong><span>Дөрес җавап</span></div>
+          <div class="score-card"><strong id="mistakeText">0</strong><span>Хаталар</span></div>
+          <div class="score-card"><strong>1 / 1</strong><span>Ачык җавап бирелде</span></div>
+        </div>
+        <div class="done-card"><strong>Ачык җавап</strong><p id="openPreview"></p></div>
+        <div class="action-step"><strong>Гамәли адым:</strong> Нәтиҗә балл белән генә бетми. Хәзер сүрәдән алган бер күркәм гамәлне тормышта башкару мөһим.</div>
+        <p class="hint">Бу сүрә буенча эш тәмамланды. Башка сүрәгә автоматик күчү юк.</p>
+        <div class="actions"><button id="retryBtn" class="primary">Кабат үтәргә</button></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="text/plain" id="legacy-fatiha-script">
+    const reviewItems = [
+      {q:'Һәр хәерле эшне «Бисмилләһ» белән башлау нәрсәне аңлата?',a:'Аллаһ исеме белән башлап, Аның ярдәмен һәм бәрәкәтен сорауны. «Бисмилләһ» кешенең эшен Аллаһ исеме белән башлавын һәм Аның ярдәменә мохтаҗ булуын белдерә.'},
+      {q:'«Галәмнәрнең Раббысы» дигәндә «Раббы» сүзе нәрсәне аңлата?',a:'Барлык галәмнәрне яратучы, тәрбияләүче һәм идарә итүче Хакимне. Раббы — барлык мәхлукларны яратучы, үстерүче, тәрбияләүче һәм идарә итүче Аллаһ.'},
+      {q:'Аллаһның «Рәхман» сыйфаты нәрсәне белдерә?',a:'Бу дөньяда Аның киң рәхмәте барлык җан ияләренә ирешүен. Рәхман сыйфаты Аллаһның бу дөньяда иманлыга да, имансызга да җиткән киң рәхмәтен белдерә.'},
+      {q:'Аллаһның «Рәхим» сыйфаты Ахирәттә кемнәргә аерым рәхмәт күрсәтелүен аңлата?',a:'Иман китергән бәндәләргә. Рәхим сыйфаты Ахирәттә мөэминнәргә биреләчәк махсус һәм дәвамлы рәхмәтне белдерә.'},
+      {q:'«Җәза көненең Патшасы» дигән аять нәрсәне искәртә?',a:'Кыямәт көнендә һәркем җавап бирәчәген һәм хөкемнең Аллаһныкы булуын. Ахирәттә һәр кеше гамәлләре өчен җавап бирә, ә тулы хакимлек бары тик Аллаһта була.'},
+      {q:'«Сиңа гына гыйбадәт кылабыз» дигән сүз нинди нигезне күрсәтә?',a:'Гыйбадәтне ихлас рәвештә Аллаһка гына багышлауны. Бу сүз тәүхид һәм ихласлыкны ныгыта: гыйбадәтнең бөтен төре Аллаһ өчен генә кылына.'},
+      {q:'«Синнән генә ярдәм сорыйбыз» дигән сүз кешенең нинди халәтен күрсәтә?',a:'Һәр эштә Аллаһка мохтаҗ булып, Аңа тәвәккәл итүен. Мөэмин сәбәпләрне куллана, әмма чын ярдәмне Аллаһтан көтә һәм Аңа тәвәккәл итә.'},
+      {q:'Алтынчы аятьтә мөэмин Аллаһтан нәрсә сорый?',a:'Туры юлга юнәлтүне һәм анда нык тотуны. «Безне туры юлга күндер» догасы хакны танып, Ислам юлында нык калуны сорауны аңлата.'},
+      {q:'«Нигъмәт бирелгәннәр» юлы кемнәрнең юлы?',a:'Пәйгамбәрләр, тугры кешеләр, шәһитләр һәм изгеләрнең. Бу — Аллаһка буйсынып яшәгән пәйгамбәрләр һәм изге бәндәләрнең туры юлы.'},
+      {q:'Ачуга дучар булганнар һәм адашканнарның аермасы нәрсәдә?',a:'Беренчеләре хакны белеп тә иярмәгән, икенчеләре белемсезлек аркасында тайпылган. Белемгә каршы гамәл кылу да, белемсез гамәл кылу да туры юлдан читкә алып китә.'}
+    ];
+
+    const testItems = [
+      {q:'Һәр хәерле эшне «Бисмилләһ» белән башлау нәрсәне аңлата?',o:['Эшне кешеләргә күрсәтүне','Эшнең җиңел булачагына үз көчең белән ышануны','Аллаһ исеме белән башлап, Аның ярдәмен һәм бәрәкәтен сорауны'],a:2},
+      {q:'«Галәмнәрнең Раббысы» дигәндә «Раббы» сүзе нәрсәне аңлата?',o:['Барлык галәмнәрне яратучы, тәрбияләүче һәм идарә итүче Хакимне','Бары тик бер халыкны күзәтүчене','Кешеләр сайлаган җитәкчене'],a:0},
+      {q:'Аллаһның «Рәхман» сыйфаты нәрсәне белдерә?',o:['Рәхмәтнең бары тик Ахирәттә күрсәтелүен','Бу дөньяда Аның киң рәхмәте барлык җан ияләренә ирешүен','Рәхмәтнең бары тик фәрештәләргә бирелүен'],a:1},
+      {q:'Аллаһның «Рәхим» сыйфаты Ахирәттә кемнәргә аерым рәхмәт күрсәтелүен аңлата?',o:['Барлык залимнәргә','Бернинди хисапсыз һәркемгә','Иман китергән бәндәләргә'],a:2},
+      {q:'«Җәза көненең Патшасы» дигән аять нәрсәне искәртә?',o:['Кыямәт көнендә һәркем җавап бирәчәген һәм хөкемнең Аллаһныкы булуын','Дөньядагы патшаларның хакимлеген','Байлыкның кешене хисаптан коткаруын'],a:0},
+      {q:'«Сиңа гына гыйбадәт кылабыз» дигән сүз нинди нигезне күрсәтә?',o:['Гыйбадәтне кешеләр күрсен өчен кылуны','Гыйбадәтне ихлас рәвештә Аллаһка гына багышлауны','Гыйбадәтнең бары тик бәйрәмнәрдә булуын'],a:1},
+      {q:'«Синнән генә ярдәм сорыйбыз» дигән сүз кешенең нинди халәтен күрсәтә?',o:['Үз көченә генә таянуын','Башкалардан бөтенләй ярдәм кабул итмәвен','Һәр эштә Аллаһка мохтаҗ булып, Аңа тәвәккәл итүен'],a:2},
+      {q:'Алтынчы аятьтә мөэмин Аллаһтан нәрсә сорый?',o:['Туры юлга юнәлтүне һәм анда нык тотуны','Дөнья малын башкалардан күбрәк бирүне','Сынауларны бөтенләй бетерүне'],a:0},
+      {q:'«Нигъмәт бирелгәннәр» юлы кемнәрнең юлы?',o:['Дөньяда иң бай кешеләрнең','Пәйгамбәрләр, тугры кешеләр, шәһитләр һәм изгеләрнең','Үз теләкләренә генә иярүчеләрнең'],a:1},
+      {q:'Ачуга дучар булганнар һәм адашканнарның аермасы нәрсәдә?',o:['Беренчеләре ярлы, икенчеләре бай','Беренчеләре юлны тапкан, икенчеләре сәфәрдә калган','Беренчеләре хакны белеп тә иярмәгән, икенчеләре белемсезлек аркасында тайпылган'],a:2}
+    ];
+
+    const screens=['home','intro','review','identity','quiz','result'];
+    const stageNames={intro:'Дәрес белән танышу',review:'Сораулар аша кабатлау',identity:'Укучы турында мәгълүмат',quiz:'Белемне тикшерү',result:'Эш тәмамланды'};
+    const stageNumbers={intro:1,review:2,identity:3,quiz:4,result:5};
+    let reviewIndex=0,quizIndex=0,quizAnswers=Array(testItems.length).fill(null),openText='',answerChecked=false;
+    const $=id=>document.getElementById(id);
+
+    function show(id){
+      screens.forEach(s=>$(s).classList.toggle('hidden',s!==id));
+      const staged=id!=='home'; $('stagebar').classList.toggle('hidden',!staged);
+      if(staged){const n=stageNumbers[id];$('stageName').textContent=stageNames[id];$('stageCount').textContent=`${n} / 5`;$('stageProgress').style.width=`${n*20}%`;}
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function lessonUrl(){const u=new URL(window.location.href);u.search='';u.searchParams.set('sura','fatiha');const g=$('teacherGroup').value.trim();if(g)u.searchParams.set('group',g);return u.toString();}
+    $('copyLinkBtn').addEventListener('click',()=>{const link=lessonUrl();$('teacherLink').value=link;$('teacherLink').classList.remove('hidden');$('copyNote').textContent='Сылтама әзер. Астагы юлдан күчереп алырга мөмкин.';if(navigator.clipboard?.writeText){navigator.clipboard.writeText(link).then(()=>{$('copyNote').textContent='Сылтама күчереп алынды.';}).catch(()=>{});}});
+    $('teacherGroup').addEventListener('input',()=>{const g=$('teacherGroup').value.trim();$('fatihaCard').href=`?sura=fatiha${g?`&group=${encodeURIComponent(g)}`:''}`;});
+
+    function renderReview(){
+      const item=reviewItems[reviewIndex];$('reviewCounter').textContent=`${reviewIndex+1} / ${reviewItems.length}`;$('reviewQuestion').textContent=`${reviewIndex+1}. ${item.q}`;$('reviewAnswerText').textContent=item.a;$('reviewAnswer').classList.add('hidden');$('showAnswerBtn').classList.remove('hidden');$('nextReviewBtn').classList.add('hidden');$('nextReviewBtn').textContent=reviewIndex===reviewItems.length-1?'Тестка әзерләнергә':'Киләсе сорау';
+    }
+    $('startReviewBtn').addEventListener('click',()=>{reviewIndex=0;renderReview();show('review');});
+    $('showAnswerBtn').addEventListener('click',()=>{$('reviewAnswer').classList.remove('hidden');$('showAnswerBtn').classList.add('hidden');$('nextReviewBtn').classList.remove('hidden');});
+    $('nextReviewBtn').addEventListener('click',()=>{if(reviewIndex<reviewItems.length-1){reviewIndex++;renderReview();window.scrollTo({top:0,behavior:'smooth'});}else show('identity');});
+
+    const params=new URLSearchParams(location.search);const presetGroup=params.get('group')||'';$('studentGroup').value=presetGroup;
+    $('startTestBtn').addEventListener('click',()=>{const name=$('studentName').value.trim(),group=$('studentGroup').value.trim();if(!name||!group){$('identityError').textContent='Исем-фамилия һәм төркем юлларын тутырыгыз.';$('identityError').classList.remove('hidden');return;}$('identityError').classList.add('hidden');quizIndex=0;quizAnswers=Array(testItems.length).fill(null);openText='';renderQuiz();show('quiz');});
+
+    function renderQuiz(){
+      const isOpen=quizIndex===testItems.length;answerChecked=false;$('quizError').classList.add('hidden');$('quizFeedback').classList.add('hidden');$('quizEyebrow').textContent=isOpen?'Гамәл · Соңгы ачык сорау':`Белем · ${quizIndex+1} нче сорау`;$('quizOptions').classList.toggle('hidden',isOpen);$('openWrap').classList.toggle('hidden',!isOpen);$('nextQuizBtn').textContent=isOpen?'Җавапларны җибәрергә':'Тикшерергә';
+      if(isOpen){$('quizQuestion').textContent='Бу сүрә безне нәрсәгә өйрәтә һәм шуңа нигезләнеп, үз тормышыгызда нинди күркәм гамәл кылырга ниятлисез?';$('openAnswer').value=openText;return;}
+      const item=testItems[quizIndex],letters=['А','Ә','Б'];$('quizQuestion').textContent=item.q;$('quizOptions').innerHTML=item.o.map((opt,i)=>`<label class="option"><input type="radio" name="choice" value="${i}" ${quizAnswers[quizIndex]===i?'checked':''}><span class="letter">${letters[i]}</span><span>${opt}</span></label>`).join('');
+    }
+    $('nextQuizBtn').addEventListener('click',()=>{
+      if(quizIndex<testItems.length){
+        if(answerChecked){quizIndex++;renderQuiz();window.scrollTo({top:0,behavior:'smooth'});return;}
+        const chosen=document.querySelector('input[name="choice"]:checked');if(!chosen){$('quizError').textContent='Тикшерү өчен бер җавапны сайлагыз.';$('quizError').classList.remove('hidden');return;}
+        const selected=Number(chosen.value),item=testItems[quizIndex],isCorrect=selected===item.a;quizAnswers[quizIndex]=selected;answerChecked=true;
+        document.querySelectorAll('.option').forEach((option,i)=>{option.classList.add('locked');option.querySelector('input').disabled=true;if(i===item.a)option.classList.add('correct');if(i===selected&&!isCorrect)option.classList.add('wrong');});
+        $('quizFeedback').className=`feedback ${isCorrect?'correct':'wrong'}`;$('feedbackTitle').textContent=isCorrect?'Дөрес җавап!':'Бу җавап дөрес түгел.';$('feedbackText').textContent=isCorrect?reviewItems[quizIndex].a:`Дөрес җавап: ${reviewItems[quizIndex].a}`;$('nextQuizBtn').textContent='Алга';$('quizError').classList.add('hidden');return;
+      }
+      openText=$('openAnswer').value.trim();if(!openText){$('quizError').textContent='Соңгы сорауга җавап языгыз.';$('quizError').classList.remove('hidden');return;}finish();
+    });
+    function finish(){const correct=testItems.reduce((sum,item,i)=>sum+(quizAnswers[i]===item.a?1:0),0),mistakes=testItems.length-correct;$('scoreText').textContent=`${correct} / ${testItems.length}`;$('mistakeText').textContent=mistakes;$('resultText').textContent=`${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Ачык җавапны укытучы тикшерәчәк.`;$('openPreview').textContent=openText;show('result');}
+    $('retryBtn').addEventListener('click',()=>{reviewIndex=0;quizIndex=0;quizAnswers=Array(testItems.length).fill(null);openText='';$('openAnswer').value='';show('intro');});
+
+    if(params.get('sura')==='fatiha')show('intro');else show('home');
+  </script>
+  <script src="surahs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
