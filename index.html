@@ -110,6 +110,7 @@
           <button id="copyLinkBtn" class="primary">Сылтаманы күчерергә</button>
           <input id="teacherLink" class="hidden" type="text" readonly aria-label="Әзер сылтама">
           <p id="copyNote" class="copy-note" role="status"></p>
+          <p><a href="teacher.html">Нәтиҗәләр журналы →</a></p>
         </aside>
       </div>
     </section>
@@ -184,7 +185,9 @@
         <div class="done-card"><strong>Ачык җавап</strong><p id="openPreview"></p></div>
         <div class="action-step"><strong>Гамәли адым:</strong> Нәтиҗә балл белән генә бетми. Хәзер сүрәдән алган бер күркәм гамәлне тормышта башкару мөһим.</div>
         <p class="hint">Бу сүрә буенча эш тәмамланды. Башка сүрәгә автоматик күчү юк.</p>
-        <div class="actions"><button id="retryBtn" class="primary">Кабат үтәргә</button></div>
+        <p class="action-step" id="sendInstruction"><strong>Сез тестны үттегез.</strong> Нәтиҗәне укытучыга җибәрү өчен «Нәтиҗәне җибәрергә» төймәсенә басыгыз.</p>
+        <div class="actions"><button id="sendResultBtn" class="primary" aria-describedby="sendInstruction">Нәтиҗәне җибәрергә</button><button id="retryBtn" class="secondary">Кабат үтәргә</button></div>
+        <p id="resultSendNote" class="copy-note" role="status" aria-live="polite"></p>
       </div>
     </section>
   </main>
@@ -263,7 +266,7 @@
 
     if(params.get('sura')==='fatiha')show('intro');else show('home');
   </script>
-  <script src="surahs.js"></script>
-  <script src="app.js"></script>
+  <script src="surahs.js?v=1"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

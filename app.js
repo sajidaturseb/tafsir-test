@@ -11,6 +11,10 @@
   let quizAnswers = [];
   let openText = '';
   let answerChecked = false;
+  let startedAt = 0;
+  let attemptId = '';
+  let sent = false;
+  const resultsEndpoint = 'https://kxwhwmxzmtvueksyayvz.supabase.co/functions/v1/submit-tafsir-quiz';
 
   const $ = id => document.getElementById(id);
   const screens = ['home', 'intro', 'review', 'identity', 'quiz', 'result'];
@@ -87,7 +91,7 @@
     $('quizEyebrow').textContent = isOpen ? 'Гамәл · Соңгы ачык сорау' : `Белем · ${quizIndex + 1} нче сорау`;
     $('quizOptions').classList.toggle('hidden', isOpen);
     $('openWrap').classList.toggle('hidden', !isOpen);
-    $('nextQuizBtn').textContent = isOpen ? 'Җавапларны җибәрергә' : 'Тикшерергә';
+    $('nextQuizBtn').textContent = isOpen ? 'Нәтиҗәне карарга' : 'Тикшерергә';
     if (isOpen) {
       $('quizQuestion').textContent = current.open;
       $('openAnswer').value = openText;
@@ -110,6 +114,10 @@
     $('mistakeText').textContent = mistakes;
     $('resultText').textContent = `${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Нәтиҗә һәм ачык җавап бу биттә күрсәтелә.`;
     $('openPreview').textContent = openText;
+    $('sendResultBtn').disabled = false;
+    $('sendResultBtn').textContent = 'Нәтиҗәне җибәрергә';
+    $('sendInstruction').innerHTML = '<strong>Сез тестны үттегез.</strong> Нәтиҗәне укытучыга җибәрү өчен «Нәтиҗәне җибәрергә» төймәсенә басыгыз.';
+    $('resultSendNote').textContent = '';
     show('result');
   }
 
@@ -172,6 +180,9 @@
     quizIndex = 0;
     quizAnswers = Array(current.questions.length).fill(null);
     openText = '';
+    startedAt = Date.now();
+    attemptId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    sent = false;
     renderQuiz();
     show('quiz');
   });
@@ -219,7 +230,52 @@
     finish();
   });
 
+  $('sendResultBtn').addEventListener('click', async () => {
+    if (sent) return;
+    const button = $('sendResultBtn');
+    button.disabled = true;
+    button.textContent = 'Җибәрелә…';
+    $('resultSendNote').textContent = 'Нәтиҗә җибәрелә, бераз көтегез.';
+    const score = current.questions.reduce((sum, item, index) => sum + Number(quizAnswers[index] === item.a), 0);
+    const payload = {
+      attemptId,
+      studentName: $('studentName').value.trim(),
+      group: $('studentGroup').value.trim(),
+      surahSlug: current.slug,
+      surahTitle: current.title,
+      score,
+      total: current.questions.length,
+      durationSeconds: Math.min(86400, Math.max(1, Math.round((Date.now() - startedAt) / 1000))),
+      answers: current.questions.map((item, index) => ({
+        number: index + 1,
+        selected: quizAnswers[index],
+        correct: item.a,
+        isCorrect: quizAnswers[index] === item.a
+      })),
+      openQuestion: current.open,
+      openAnswer: openText
+    };
+    try {
+      const response = await fetch(resultsEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'send_failed');
+      sent = true;
+      button.textContent = 'Җибәрелде';
+      $('sendInstruction').innerHTML = '<strong>Нәтиҗә җибәрелде.</strong> Ул укытучы журналында сакланды.';
+      $('resultSendNote').textContent = 'Башка бернәрсә эшләргә кирәкми.';
+    } catch {
+      button.disabled = false;
+      button.textContent = 'Кабат җибәрергә';
+      $('resultSendNote').textContent = 'Нәтиҗә җибәрелмәде. Интернетны тикшереп, кабат басыгыз.';
+    }
+  });
+
   $('retryBtn').addEventListener('click', () => {
+    if (!sent && !confirm('Нәтиҗә әле укытучыга җибәрелмәде. Чыннан да кабат үтәргәме?')) return;
     reviewIndex = 0;
     quizIndex = 0;
     quizAnswers = [];
