@@ -17,6 +17,27 @@
   const resultsEndpoint = 'https://kxwhwmxzmtvueksyayvz.supabase.co/functions/v1/submit-tafsir-quiz';
 
   const $ = id => document.getElementById(id);
+  function fillGroupSelect(id, placeholder) {
+    const select = $(id);
+    select.add(new Option(placeholder, ''));
+    const addBlock = (label, count, prefix = label) => {
+      const block = document.createElement('optgroup');
+      block.label = label;
+      for (let number = 1; number <= count; number++) {
+        const value = `${prefix} — ${number} группа`;
+        block.append(new Option(value, value));
+      }
+      select.add(block);
+    };
+    for (let course = 1; course <= 4; course++) {
+      addBlock(`${course} курс`, 8);
+      addBlock(`Онлайн ${course} курс`, 10);
+    }
+    for (const direction of ['Дагват', 'Мәгърифәт', 'Остазлар']) {
+      addBlock(`${direction}, 1 курс`, 3);
+    }
+    addBlock('Коръән уку мәктәбе', 10);
+  }
   const screens = ['home', 'intro', 'review', 'identity', 'quiz', 'result'];
   const stageNames = {
     intro: 'Дәрес белән танышу',
@@ -60,7 +81,7 @@
     document.querySelector('#intro h1').textContent = current.title;
     document.querySelector('#intro .lead').textContent = current.subtitle;
     document.querySelector('#intro .summary').textContent =
-      `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне һәм төркемегезне язып, тестны үтисез.`;
+      `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне язып, группагызны сайлап, тестны үтисез.`;
   }
 
   function lessonUrl() {
@@ -124,7 +145,12 @@
   renderHome();
   applyCurrentSurah();
   if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = `${surahs.length} СҮРӘ`;
-  $('studentGroup').value = params.get('group') || '';
+  fillGroupSelect('teacherGroup', 'Группу выберет ученик');
+  fillGroupSelect('studentGroup', 'Выберите группу');
+  const presetGroup = params.get('group') || '';
+  if ([...$('studentGroup').options].some(option => option.value === presetGroup && presetGroup)) {
+    $('studentGroup').value = presetGroup;
+  }
 
   $('copyLinkBtn').addEventListener('click', () => {
     const link = lessonUrl();
@@ -143,7 +169,7 @@
     $('teacherLink').classList.add('hidden');
     $('copyNote').textContent = '';
   });
-  $('teacherGroup').addEventListener('input', () => {
+  $('teacherGroup').addEventListener('change', () => {
     $('teacherLink').classList.add('hidden');
     $('copyNote').textContent = '';
   });
@@ -172,7 +198,7 @@
     const name = $('studentName').value.trim();
     const group = $('studentGroup').value.trim();
     if (!name || !group) {
-      $('identityError').textContent = 'Исем-фамилия һәм төркем юлларын тутырыгыз.';
+      $('identityError').textContent = 'Исем-фамилияне языгыз һәм группаны сайлагыз.';
       $('identityError').classList.remove('hidden');
       return;
     }
