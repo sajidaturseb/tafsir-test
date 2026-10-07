@@ -190,8 +190,8 @@
         <div class="done-card"><strong>Ачык җавап</strong><p id="openPreview"></p></div>
         <div class="action-step"><strong>Гамәли адым:</strong> Нәтиҗә балл белән генә бетми. Хәзер сүрәдән алган бер күркәм гамәлне тормышта башкару мөһим.</div>
         <p class="hint">Бу сүрә буенча эш тәмамланды. Башка сүрәгә автоматик күчү юк.</p>
-        <p class="action-step" id="sendInstruction"><strong>Сез тестны үттегез.</strong> Нәтиҗәне укытучыга җибәрү өчен «Нәтиҗәне җибәрергә» төймәсенә басыгыз.</p>
-        <div class="actions"><button id="sendResultBtn" class="primary" aria-describedby="sendInstruction">Нәтиҗәне җибәрергә</button><button id="retryBtn" class="secondary">Кабат үтәргә</button></div>
+        <p class="action-step" id="sendInstruction"><strong>Сез тестны үттегез.</strong> Нәтиҗә укытучы журналына җибәрелә…</p>
+        <div class="actions"><button id="sendResultBtn" class="primary hidden" aria-describedby="sendInstruction">Кабат җибәрергә</button><button id="retryBtn" class="secondary">Кабат үтәргә</button></div>
         <p id="resultSendNote" class="copy-note" role="status" aria-live="polite"></p>
       </div>
     </section>
@@ -272,6 +272,6 @@
     if(params.get('sura')==='fatiha')show('intro');else show('home');
   </script>
   <script src="surahs.js?v=1"></script>
-  <script src="app.js?v=surah-links-20261007"></script>
+  <script src="app.js?v=auto-send-20261007"></script>
 </body>
 </html>

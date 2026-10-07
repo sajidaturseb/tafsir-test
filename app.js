@@ -134,10 +134,11 @@
     $('resultText').textContent = `${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Нәтиҗә һәм ачык җавап бу биттә күрсәтелә.`;
     $('openPreview').textContent = openText;
     $('sendResultBtn').disabled = false;
-    $('sendResultBtn').textContent = 'Нәтиҗәне җибәрергә';
-    $('sendInstruction').innerHTML = '<strong>Сез тестны үттегез.</strong> Нәтиҗәне укытучыга җибәрү өчен «Нәтиҗәне җибәрергә» төймәсенә басыгыз.';
+    $('sendResultBtn').classList.add('hidden');
+    $('sendInstruction').innerHTML = '<strong>Сез тестны үттегез.</strong> Нәтиҗә укытучы журналына җибәрелә…';
     $('resultSendNote').textContent = '';
     show('result');
+    void sendResult();
   }
 
   renderHome();
@@ -254,9 +255,9 @@
     finish();
   });
 
-  $('sendResultBtn').addEventListener('click', async () => {
-    if (sent) return;
+  async function sendResult() {
     const button = $('sendResultBtn');
+    if (sent || button.disabled) return;
     button.disabled = true;
     button.textContent = 'Җибәрелә…';
     $('resultSendNote').textContent = 'Нәтиҗә җибәрелә, бераз көтегез.';
@@ -291,12 +292,16 @@
       button.textContent = 'Җибәрелде';
       $('sendInstruction').innerHTML = '<strong>Нәтиҗә җибәрелде.</strong> Ул укытучы журналында сакланды.';
       $('resultSendNote').textContent = 'Башка бернәрсә эшләргә кирәкми.';
+      button.classList.add('hidden');
     } catch {
       button.disabled = false;
       button.textContent = 'Кабат җибәрергә';
+      button.classList.remove('hidden');
+      $('sendInstruction').innerHTML = '<strong>Нәтиҗә әлегә җибәрелмәде.</strong> Кабат җибәрү төймәсенә басыгыз.';
       $('resultSendNote').textContent = 'Нәтиҗә җибәрелмәде. Интернетны тикшереп, кабат басыгыз.';
     }
-  });
+  }
+  $('sendResultBtn').addEventListener('click', sendResult);
 
   $('retryBtn').addEventListener('click', () => {
     if (!sent && !confirm('Нәтиҗә әле укытучыга җибәрелмәде. Чыннан да кабат үтәргәме?')) return;
