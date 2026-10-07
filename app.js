@@ -4,7 +4,7 @@
   const surahs = Array.isArray(window.SURAH_DATA) ? window.SURAH_DATA : [];
   const bySlug = new Map(surahs.map(item => [item.slug, item]));
   const params = new URLSearchParams(location.search);
-  const requestedSlug = params.get('sura');
+  const requestedSlug = document.body.dataset.sura || params.get('sura');
   let current = bySlug.get(requestedSlug) || surahs[0];
   let reviewIndex = 0;
   let quizIndex = 0;
@@ -64,7 +64,7 @@
   function renderHome() {
     const list = document.querySelector('.surah-list');
     list.innerHTML = surahs.map(item => `
-      <a class="surah-card" href="?sura=${encodeURIComponent(item.slug)}">
+      <a class="surah-card" href="surah-${encodeURIComponent(item.slug)}.html">
         <span class="num">${item.order}</span>
         <span><strong>${item.title}</strong><span>${item.subtitle}</span></span>
         <span class="go">Ачарга</span>
@@ -85,9 +85,7 @@
   }
 
   function lessonUrl() {
-    const url = new URL(window.location.href);
-    url.search = '';
-    url.searchParams.set('sura', $('teacherSurah').value);
+    const url = new URL(`surah-${encodeURIComponent($('teacherSurah').value)}.html`, document.baseURI);
     const group = $('teacherGroup').value.trim();
     if (group) url.searchParams.set('group', group);
     return url.toString();
