@@ -1,7 +1,8 @@
 (() => {
   'use strict';
 
-  const surahs = Array.isArray(window.SURAH_DATA) ? window.SURAH_DATA : [];
+  const surahs = Array.isArray(window.SURAH_DATA)
+    ? [...window.SURAH_DATA].sort((a, b) => a.order - b.order) : [];
   const bySlug = new Map(surahs.map(item => [item.slug, item]));
   const params = new URLSearchParams(location.search);
   const requestedSlug = document.body.dataset.sura || params.get('sura');
@@ -80,8 +81,63 @@
     $('coursePill').textContent = current.title.toUpperCase();
     document.querySelector('#intro h1').textContent = current.title;
     document.querySelector('#intro .lead').textContent = current.subtitle;
-    document.querySelector('#intro .summary').textContent =
-      `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне язып, группагызны сайлап, тестны үтисез.`;
+    document.querySelector('#intro .summary').textContent = current.slug === 'mursalat'
+      ? 'Башта сүрәнең 50 аяте буенча мәгънә һәм аңлатманы укыгыз. Аннары сораулар аша кабатлап, тестны үтегез.'
+      : `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне язып, группагызны сайлап, тестны үтисез.`;
+    $('startReviewBtn').textContent = current.slug === 'mursalat' ? 'Сорауларга күчәргә' : 'Кабатлауны башларга';
+    loadTafsir();
+  }
+
+  async function loadTafsir() {
+    const host = $('tafsirText');
+    host.classList.toggle('hidden', current.slug !== 'mursalat');
+    if (current.slug !== 'mursalat') return;
+    host.textContent = 'Сүрә аңлатмасы йөкләнә…';
+    try {
+      const response = await fetch('mursalat-tafsir.md');
+      if (!response.ok) throw new Error('tafsir_unavailable');
+      renderTafsir(await response.text(), host);
+    } catch {
+      host.textContent = 'Аңлатманы йөкләп булмады. Битне яңартып карагыз.';
+    }
+  }
+
+  function renderTafsir(markdown, host) {
+    host.replaceChildren();
+    let section = host;
+    let ayah = null;
+    for (const raw of markdown.split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line || line.startsWith('# ')) continue;
+      if (line.startsWith('## ')) {
+        const sources = line === '## Чыганаклар';
+        section = document.createElement('section');
+        section.className = sources ? 'tafsir-sources' : 'tafsir-section';
+        const heading = document.createElement('h2');
+        heading.textContent = line.slice(3);
+        section.append(heading);
+        host.append(section);
+        ayah = null;
+      } else if (line.startsWith('### ')) {
+        ayah = document.createElement('article');
+        ayah.className = 'ayah-card';
+        const heading = document.createElement('h3');
+        heading.textContent = line.slice(4);
+        ayah.append(heading);
+        section.append(ayah);
+      } else {
+        const paragraph = document.createElement('p');
+        const match = line.match(/^\*\*(Мәгънәсе|Аңлатма):\*\*\s*(.*)$/);
+        if (match) {
+          const label = document.createElement('strong');
+          label.textContent = `${match[1]}: `;
+          paragraph.append(label, document.createTextNode(match[2]));
+        } else {
+          paragraph.textContent = line;
+        }
+        (ayah || section).append(paragraph);
+      }
+    }
   }
 
   function lessonUrl() {
@@ -107,13 +163,18 @@
     answerChecked = false;
     $('quizError').classList.add('hidden');
     $('quizFeedback').classList.add('hidden');
-    $('quizEyebrow').textContent = isOpen ? 'Гамәл · Соңгы ачык сорау' : `Белем · ${quizIndex + 1} нче сорау`;
+    $('quizEyebrow').textContent = isOpen
+      ? (current.slug === 'mursalat' ? 'Уйлану · Соңгы ачык сорау' : 'Гамәл · Соңгы ачык сорау')
+      : `Белем · ${quizIndex + 1} нче сорау`;
     $('quizOptions').classList.toggle('hidden', isOpen);
     $('openWrap').classList.toggle('hidden', !isOpen);
     $('nextQuizBtn').textContent = isOpen ? 'Нәтиҗәне карарга' : 'Тикшерергә';
     if (isOpen) {
       $('quizQuestion').textContent = current.open;
       $('openAnswer').value = openText;
+      $('openAnswer').placeholder = current.slug === 'mursalat'
+        ? 'Сүрәдән алган гыйбрәтегезне үз сүзләрегез белән языгыз...'
+        : 'Күркәм гамәл турында җавабыгыз...';
       return;
     }
     const item = current.questions[quizIndex];
