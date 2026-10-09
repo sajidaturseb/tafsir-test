@@ -25,7 +25,8 @@
     fajr: 'fajr-tafsir.md', ghashiya: 'ghashiya-tafsir.md',
     ala: 'ala-tafsir.md', tariq: 'tariq-tafsir.md',
     buruj: 'buruj-tafsir.md', takwir: 'takwir-tafsir.md',
-    abasa: 'abasa-tafsir.md'
+    abasa: 'abasa-tafsir.md',
+    tin: 'tin-tafsir.md', naziat: 'naziat-tafsir.md'
   };
   const tafsirVerseCounts = {
     fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19,
@@ -33,7 +34,7 @@
     fil: 5, humaza: 9, asr: 3, takathur: 8, qaria: 11, adiyat: 11,
     zalzala: 8, bayyina: 8, qadr: 5, sharh: 8, duha: 11, layl: 21,
     shams: 15, balad: 20, fajr: 30, ghashiya: 26, ala: 19,
-    tariq: 17, buruj: 22, takwir: 29, abasa: 42
+    tariq: 17, buruj: 22, takwir: 29, abasa: 42, tin: 8, naziat: 46
   };
   const params = new URLSearchParams(location.search);
   const requestedSlug = document.body.dataset.sura || params.get('sura');
