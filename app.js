@@ -4,6 +4,15 @@
   const surahs = Array.isArray(window.SURAH_DATA)
     ? [...window.SURAH_DATA].sort((a, b) => a.order - b.order) : [];
   const bySlug = new Map(surahs.map(item => [item.slug, item]));
+  const tafsirFiles = {
+    fatiha: 'fatiha-tafsir.md',
+    mursalat: 'mursalat-tafsir.md',
+    nas: 'nas-tafsir.md',
+    ikhlas: 'ikhlas-tafsir.md',
+    falaq: 'falaq-tafsir.md',
+    naba: 'naba-tafsir.md'
+  };
+  const tafsirVerseCounts = {fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40};
   const params = new URLSearchParams(location.search);
   const requestedSlug = document.body.dataset.sura || params.get('sura');
   let current = bySlug.get(requestedSlug) || surahs[0];
@@ -81,20 +90,22 @@
     $('coursePill').textContent = current.title.toUpperCase();
     document.querySelector('#intro h1').textContent = current.title;
     document.querySelector('#intro .lead').textContent = current.subtitle;
-    document.querySelector('#intro .summary').textContent = current.slug === 'mursalat'
-      ? 'Башта сүрәнең 50 аяте буенча мәгънә һәм аңлатманы укыгыз. Аннары сораулар аша кабатлап, тестны үтегез.'
+    document.querySelector('#intro .summary').textContent = tafsirFiles[current.slug]
+      ? `Башта сүрәнең ${tafsirVerseCounts[current.slug]} аяте буенча мәгънә һәм аңлатманы укыгыз. Аннары сораулар аша кабатлап, тестны үтегез.`
       : `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне язып, группагызны сайлап, тестны үтисез.`;
-    $('startReviewBtn').textContent = current.slug === 'mursalat' ? 'Сорауларга күчәргә' : 'Кабатлауны башларга';
+    $('startReviewBtn').textContent = tafsirFiles[current.slug] ? 'Сорауларга күчәргә' : 'Кабатлауны башларга';
     loadTafsir();
   }
 
   async function loadTafsir() {
     const host = $('tafsirText');
-    host.classList.toggle('hidden', current.slug !== 'mursalat');
-    if (current.slug !== 'mursalat') return;
+    if (!host) return;
+    const file = tafsirFiles[current.slug];
+    host.classList.toggle('hidden', !file);
+    if (!file) return;
     host.textContent = 'Сүрә аңлатмасы йөкләнә…';
     try {
-      const response = await fetch('mursalat-tafsir.md');
+      const response = await fetch(file);
       if (!response.ok) throw new Error('tafsir_unavailable');
       renderTafsir(await response.text(), host);
     } catch {
