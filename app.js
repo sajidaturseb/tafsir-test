@@ -11,9 +11,30 @@
     ikhlas: 'ikhlas-tafsir.md',
     falaq: 'falaq-tafsir.md',
     naba: 'naba-tafsir.md',
-    alaq: 'alaq-tafsir.md'
+    alaq: 'alaq-tafsir.md',
+    masad: 'masad-tafsir.md', nasr: 'nasr-tafsir.md',
+    kafirun: 'kafirun-tafsir.md', kawthar: 'kawthar-tafsir.md',
+    maun: 'maun-tafsir.md', quraysh: 'quraysh-tafsir.md',
+    fil: 'fil-tafsir.md', humaza: 'humaza-tafsir.md',
+    asr: 'asr-tafsir.md', takathur: 'takathur-tafsir.md',
+    qaria: 'qaria-tafsir.md', adiyat: 'adiyat-tafsir.md',
+    zalzala: 'zalzala-tafsir.md', bayyina: 'bayyina-tafsir.md',
+    qadr: 'qadr-tafsir.md', sharh: 'sharh-tafsir.md',
+    duha: 'duha-tafsir.md', layl: 'layl-tafsir.md',
+    shams: 'shams-tafsir.md', balad: 'balad-tafsir.md',
+    fajr: 'fajr-tafsir.md', ghashiya: 'ghashiya-tafsir.md',
+    ala: 'ala-tafsir.md', tariq: 'tariq-tafsir.md',
+    buruj: 'buruj-tafsir.md', takwir: 'takwir-tafsir.md',
+    abasa: 'abasa-tafsir.md'
   };
-  const tafsirVerseCounts = {fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19};
+  const tafsirVerseCounts = {
+    fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19,
+    masad: 5, nasr: 3, kafirun: 6, kawthar: 3, maun: 7, quraysh: 4,
+    fil: 5, humaza: 9, asr: 3, takathur: 8, qaria: 11, adiyat: 11,
+    zalzala: 8, bayyina: 8, qadr: 5, sharh: 8, duha: 11, layl: 21,
+    shams: 15, balad: 20, fajr: 30, ghashiya: 26, ala: 19,
+    tariq: 17, buruj: 22, takwir: 29, abasa: 42
+  };
   const params = new URLSearchParams(location.search);
   const requestedSlug = document.body.dataset.sura || params.get('sura');
   let current = bySlug.get(requestedSlug) || surahs[0];
@@ -139,7 +160,7 @@
         section.append(ayah);
       } else {
         const paragraph = document.createElement('p');
-        const match = line.match(/^\*\*(Мәгънәсе|Аңлатма):\*\*\s*(.*)$/);
+        const match = line.match(/^\*\*(Мәгънәсе|Текст һәм мәгънә|Аңлатма):\*\*\s*(.*)$/);
         if (match) {
           const label = document.createElement('strong');
           label.textContent = `${match[1]}: `;
