@@ -10,9 +10,10 @@
     nas: 'nas-tafsir.md',
     ikhlas: 'ikhlas-tafsir.md',
     falaq: 'falaq-tafsir.md',
-    naba: 'naba-tafsir.md'
+    naba: 'naba-tafsir.md',
+    alaq: 'alaq-tafsir.md'
   };
-  const tafsirVerseCounts = {fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40};
+  const tafsirVerseCounts = {fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19};
   const params = new URLSearchParams(location.search);
   const requestedSlug = document.body.dataset.sura || params.get('sura');
   let current = bySlug.get(requestedSlug) || surahs[0];

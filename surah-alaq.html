@@ -68,6 +68,7 @@
     .teacher .primary{width:100%;margin-top:20px}
     .copy-note{min-height:1.5em;color:var(--green-800);font-weight:800;text-align:center;margin:10px 0 0}
     .intro-copy{max-width:920px}.summary{margin-top:32px;padding:20px 24px;border-left:5px solid var(--gold);background:linear-gradient(90deg,var(--gold-soft),#fffaf0);border-radius:0 16px 16px 0;font:1.05rem Georgia,"Times New Roman",serif}
+    .tafsir-reader{margin-top:34px}.tafsir-reader>p{font-size:1.05rem;line-height:1.75}.tafsir-section{margin-top:26px;padding:24px;border:1px solid #bfd8ca;border-left:6px solid #4f9d78;border-radius:18px;background:#f3faf5}.tafsir-section:nth-of-type(even){border-color:#e8d69e;border-left-color:#d1a342;background:#fffaf0}.tafsir-section h2{font-size:clamp(1.35rem,2.8vw,2rem);margin-bottom:12px}.tafsir-section>p{margin:0 0 20px;line-height:1.7}.ayah-card{margin:15px 0;padding:19px 21px;background:#fff;border:1px solid #d7e6da;border-radius:15px}.tafsir-section:nth-of-type(even) .ayah-card{border-color:#eee2bf}.ayah-card h3{font-size:1.12rem;color:var(--green-800);margin-bottom:9px}.ayah-card p{margin:8px 0;line-height:1.7}.ayah-card strong{color:var(--green-900)}.tafsir-sources{margin-top:24px;padding:17px 20px;border-radius:14px;background:#f2f5f3;font-size:.94rem;color:var(--muted)}
     .review-wrap{max-width:920px;margin:0 auto}
     .counter{color:var(--muted);font-weight:800;margin-left:auto}
     .review-question{margin-top:22px;padding:26px;border:1px solid var(--line);border-radius:20px;background:white}
@@ -127,6 +128,7 @@
         <h1>Әл-Фатиха сүрәсе</h1>
         <p class="lead">Аллаһны олылау, Аңа гына гыйбадәт кылу һәм туры юл сорап дога кылу.</p>
         <div class="summary">Бу эштә башта 10 сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне һәм төркемегезне язып, тестны үтисез.</div>
+        <div id="tafsirText" class="tafsir-reader hidden" aria-label="Сүрәнең мәгънәсе һәм аңлатмасы"></div>
         <div class="actions"><button id="startReviewBtn" class="primary">Кабатлауны башларга</button></div>
       </div>
     </section>
@@ -273,6 +275,6 @@
     if(params.get('sura')==='fatiha')show('intro');else show('home');
   </script>
   <script src="surahs.js?v=1"></script>
-  <script src="app.js?v=auto-send-20261007"></script>
+  <script src="app.js?v=alaq-tafsir-20261009"></script>
 </body>
 </html>
