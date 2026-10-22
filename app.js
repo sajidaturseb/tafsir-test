@@ -7,6 +7,9 @@
   const tafsirFiles = {
     fatiha: 'fatiha-tafsir.md',
     mursalat: 'mursalat-tafsir.md',
+    'insan-1': 'insan-1-tafsir.md',
+    'insan-2': 'insan-2-tafsir.md',
+    'insan-3': 'insan-3-tafsir.md',
     nas: 'nas-tafsir.md',
     ikhlas: 'ikhlas-tafsir.md',
     falaq: 'falaq-tafsir.md',
@@ -32,6 +35,7 @@
   };
   const tafsirVerseCounts = {
     fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19,
+    'insan-1': 10, 'insan-2': 12, 'insan-3': 9,
     masad: 5, nasr: 3, kafirun: 6, kawthar: 3, maun: 7, quraysh: 4,
     fil: 5, humaza: 9, asr: 3, takathur: 8, qaria: 11, adiyat: 11,
     zalzala: 8, bayyina: 8, qadr: 5, sharh: 8, duha: 11, layl: 21,
@@ -101,12 +105,12 @@
     const list = document.querySelector('.surah-list');
     list.innerHTML = surahs.map(item => `
       <a class="surah-card" href="surah-${encodeURIComponent(item.slug)}.html">
-        <span class="num">${item.order}</span>
+        <span class="num">${item.lessonLabel || item.order}</span>
         <span><strong>${item.title}</strong><span>${item.subtitle}</span></span>
         <span class="go">Ачарга</span>
       </a>`).join('');
     $('teacherSurah').innerHTML = surahs.map(item =>
-      `<option value="${item.slug}">${item.order}. ${item.title}</option>`
+      `<option value="${item.slug}">${item.lessonLabel || item.order}. ${item.title}</option>`
     ).join('');
     $('teacherSurah').value = current.slug;
   }
@@ -185,14 +189,16 @@
   }
 
   function renderReview() {
-    const item = current.questions[reviewIndex];
-    $('reviewCounter').textContent = `${reviewIndex + 1} / ${current.questions.length}`;
+    const review = current.review || current.questions;
+    const item = review[reviewIndex];
+    $('reviewCounter').textContent = `${reviewIndex + 1} / ${review.length}`;
     $('reviewQuestion').textContent = `${reviewIndex + 1}. ${item.q}`;
-    $('reviewAnswerText').textContent = `${item.o[item.a]}. ${item.basis}`;
+    $('reviewAnswerText').textContent = item.a && typeof item.a === 'string'
+      ? item.a : `${item.o[item.a]}. ${item.basis}`;
     $('reviewAnswer').classList.add('hidden');
     $('showAnswerBtn').classList.remove('hidden');
     $('nextReviewBtn').classList.add('hidden');
-    $('nextReviewBtn').textContent = reviewIndex === current.questions.length - 1 ? 'Тестка әзерләнергә' : 'Киләсе сорау';
+    $('nextReviewBtn').textContent = reviewIndex === review.length - 1 ? 'Тестка әзерләнергә' : 'Киләсе сорау';
   }
 
   function renderQuiz() {
@@ -215,7 +221,7 @@
       return;
     }
     const item = current.questions[quizIndex];
-    const letters = ['А', 'Б', 'В'];
+    const letters = ['А', 'Ә', 'Б'];
     $('quizQuestion').textContent = item.q;
     $('quizOptions').innerHTML = item.o.map((option, index) => `
       <label class="option">
@@ -241,7 +247,7 @@
 
   renderHome();
   applyCurrentSurah();
-  if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = `${surahs.length} СҮРӘ`;
+  if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = `${surahs.length} ДӘРЕС`;
   fillGroupSelect('teacherGroup', 'Группу выберет ученик');
   fillGroupSelect('studentGroup', 'Выберите группу');
   const presetGroup = params.get('group') || '';
@@ -282,7 +288,7 @@
     $('nextReviewBtn').classList.remove('hidden');
   });
   $('nextReviewBtn').addEventListener('click', () => {
-    if (reviewIndex < current.questions.length - 1) {
+    if (reviewIndex < (current.review || current.questions).length - 1) {
       reviewIndex += 1;
       renderReview();
       window.scrollTo({top: 0, behavior: 'smooth'});
