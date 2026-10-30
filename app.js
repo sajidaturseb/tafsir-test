@@ -147,7 +147,7 @@
     if (!file) return;
     host.textContent = tr('Сүрә аңлатмасы йөкләнә…', 'Загружается пояснение к суре…');
     try {
-      const response = await fetch(file);
+      const response = await fetch(current.slug === 'fatiha' ? `${file}?v=20261030b` : file);
       if (!response.ok) throw new Error('tafsir_unavailable');
       renderTafsir(await response.text(), host);
     } catch {
@@ -201,13 +201,20 @@
     return url.toString();
   }
 
+  function answerWithExplanation(item) {
+    const answer = String(item.o[item.a] || '').trim();
+    const explanation = String(item.basis || '').trim();
+    if (!explanation) return answer;
+    return `${answer}${/[.!?؟]$/.test(answer) ? ' ' : '. '}${explanation}`;
+  }
+
   function renderReview() {
     const review = current.review || current.questions;
     const item = review[reviewIndex];
     $('reviewCounter').textContent = `${reviewIndex + 1} / ${review.length}`;
     $('reviewQuestion').textContent = `${reviewIndex + 1}. ${item.q}`;
     $('reviewAnswerText').textContent = item.a && typeof item.a === 'string'
-      ? item.a : `${item.o[item.a]}. ${item.basis}`;
+      ? item.a : answerWithExplanation(item);
     $('reviewAnswer').classList.add('hidden');
     $('showAnswerBtn').classList.remove('hidden');
     $('nextReviewBtn').classList.add('hidden');
@@ -362,7 +369,7 @@
       $('feedbackTitle').textContent = isCorrect ? tr('Дөрес җавап!', 'Верно!') : tr('Бу җавап дөрес түгел.', 'Ответ неверный.');
       $('feedbackText').textContent = isCorrect
         ? item.basis
-        : tr(`Дөрес җавап: ${item.o[item.a]}. ${item.basis}`, `Правильный ответ: ${item.o[item.a]} ${item.basis}`);
+        : tr(`Дөрес җавап: ${answerWithExplanation(item)}`, `Правильный ответ: ${answerWithExplanation(item)}`);
       $('nextQuizBtn').textContent = tr('Алга', 'Далее');
       $('quizError').classList.add('hidden');
       return;
