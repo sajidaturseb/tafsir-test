@@ -1,8 +1,13 @@
 (() => {
   'use strict';
 
+  const isRussianFatiha = document.body.dataset.sura === 'fatiha' && new URLSearchParams(location.search).get('lang') === 'ru';
+  const tr = (tt, ru) => isRussianFatiha ? ru : tt;
   const surahs = Array.isArray(window.SURAH_DATA)
     ? [...window.SURAH_DATA].sort((a, b) => a.order - b.order) : [];
+  if (isRussianFatiha && window.FATIHA_RU_DATA) {
+    Object.assign(surahs.find(item => item.slug === 'fatiha'), window.FATIHA_RU_DATA);
+  }
   const bySlug = new Map(surahs.map(item => [item.slug, item]));
   const tafsirFiles = {
     fatiha: 'fatiha-tafsir.md',
@@ -80,7 +85,13 @@
     addBlock('Коръән уку мәктәбе', 10);
   }
   const screens = ['home', 'intro', 'review', 'identity', 'quiz', 'result'];
-  const stageNames = {
+  const stageNames = isRussianFatiha ? {
+    intro: 'Знакомство с уроком',
+    review: 'Повторение по вопросам',
+    identity: 'Данные ученика',
+    quiz: 'Проверка знаний',
+    result: 'Работа завершена'
+  } : {
     intro: 'Дәрес белән танышу',
     review: 'Сораулар аша кабатлау',
     identity: 'Укучы турында мәгълүмат',
@@ -117,30 +128,30 @@
   }
 
   function applyCurrentSurah() {
-    document.title = `${current.title} буенча белемне тикшерү`;
+    document.title = tr(`${current.title} буенча белемне тикшерү`, `${current.title} — урок и проверка знаний`);
     $('coursePill').textContent = current.title.toUpperCase();
     document.querySelector('#intro h1').textContent = current.title;
     document.querySelector('#intro .lead').textContent = current.subtitle;
     document.querySelector('#intro .summary').textContent = tafsirFiles[current.slug]
-      ? `Башта сүрәнең ${tafsirVerseCounts[current.slug]} аяте буенча мәгънә һәм аңлатманы укыгыз. Аннары сораулар аша кабатлап, тестны үтегез.`
+      ? tr(`Башта сүрәнең ${tafsirVerseCounts[current.slug]} аяте буенча мәгънә һәм аңлатманы укыгыз. Аннары сораулар аша кабатлап, тестны үтегез.`, `Сначала прочитайте смысл и пояснения к ${tafsirVerseCounts[current.slug]} аятам суры. Затем повторите изученное по вопросам и пройдите тест.`)
       : `Бу эштә башта ${current.questions.length} сорау аша сүрәне кабатлыйсыз һәм әзер җавап белән үз фикерегезне чагыштырасыз. Аннары исемегезне язып, группагызны сайлап, тестны үтисез.`;
-    $('startReviewBtn').textContent = tafsirFiles[current.slug] ? 'Сорауларга күчәргә' : 'Кабатлауны башларга';
+    $('startReviewBtn').textContent = tafsirFiles[current.slug] ? tr('Сорауларга күчәргә', 'Перейти к вопросам') : tr('Кабатлауны башларга', 'Начать повторение');
     loadTafsir();
   }
 
   async function loadTafsir() {
     const host = $('tafsirText');
     if (!host) return;
-    const file = tafsirFiles[current.slug];
+    const file = isRussianFatiha ? 'fatiha-tafsir-ru.md' : tafsirFiles[current.slug];
     host.classList.toggle('hidden', !file);
     if (!file) return;
-    host.textContent = 'Сүрә аңлатмасы йөкләнә…';
+    host.textContent = tr('Сүрә аңлатмасы йөкләнә…', 'Загружается пояснение к суре…');
     try {
       const response = await fetch(file);
       if (!response.ok) throw new Error('tafsir_unavailable');
       renderTafsir(await response.text(), host);
     } catch {
-      host.textContent = 'Аңлатманы йөкләп булмады. Битне яңартып карагыз.';
+      host.textContent = tr('Аңлатманы йөкләп булмады. Битне яңартып карагыз.', 'Не удалось загрузить пояснение. Обновите страницу.');
     }
   }
 
@@ -169,7 +180,7 @@
         section.append(ayah);
       } else {
         const paragraph = document.createElement('p');
-        const match = line.match(/^\*\*(Мәгънәсе|Текст һәм мәгънә|Аңлатма):\*\*\s*(.*)$/);
+        const match = line.match(/^\*\*(Мәгънәсе|Текст һәм мәгънә|Аңлатма|Смысл|Пояснение):\*\*\s*(.*)$/);
         if (match) {
           const label = document.createElement('strong');
           label.textContent = `${match[1]}: `;
@@ -186,6 +197,7 @@
     const url = new URL(`surah-${encodeURIComponent($('teacherSurah').value)}.html`, document.baseURI);
     const group = $('teacherGroup').value.trim();
     if (group) url.searchParams.set('group', group);
+    if (isRussianFatiha && $('teacherSurah').value === 'fatiha') url.searchParams.set('lang', 'ru');
     return url.toString();
   }
 
@@ -199,7 +211,7 @@
     $('reviewAnswer').classList.add('hidden');
     $('showAnswerBtn').classList.remove('hidden');
     $('nextReviewBtn').classList.add('hidden');
-    $('nextReviewBtn').textContent = reviewIndex === review.length - 1 ? 'Тестка әзерләнергә' : 'Киләсе сорау';
+    $('nextReviewBtn').textContent = reviewIndex === review.length - 1 ? tr('Тестка әзерләнергә', 'Перейти к тесту') : tr('Киләсе сорау', 'Следующий вопрос');
   }
 
   function renderQuiz() {
@@ -208,21 +220,23 @@
     $('quizError').classList.add('hidden');
     $('quizFeedback').classList.add('hidden');
     $('quizEyebrow').textContent = isOpen
-      ? (current.slug === 'mursalat' ? 'Уйлану · Соңгы ачык сорау' : 'Гамәл · Соңгы ачык сорау')
-      : `Белем · ${quizIndex + 1} нче сорау`;
+      ? tr((current.slug === 'mursalat' ? 'Уйлану · Соңгы ачык сорау' : 'Гамәл · Соңгы ачык сорау'), 'Размышление · Открытый вопрос')
+      : tr(`Белем · ${quizIndex + 1} нче сорау`, `Знание · вопрос ${quizIndex + 1}`);
     $('quizOptions').classList.toggle('hidden', isOpen);
     $('openWrap').classList.toggle('hidden', !isOpen);
-    $('nextQuizBtn').textContent = isOpen ? 'Нәтиҗәне карарга' : 'Тикшерергә';
+    $('nextQuizBtn').textContent = isOpen ? tr('Нәтиҗәне карарга', 'Посмотреть результат') : tr('Тикшерергә', 'Проверить');
     if (isOpen) {
       $('quizQuestion').textContent = current.open;
       $('openAnswer').value = openText;
-      $('openAnswer').placeholder = current.slug === 'mursalat'
-        ? 'Сүрәдән алган гыйбрәтегезне үз сүзләрегез белән языгыз...'
-        : 'Күркәм гамәл турында җавабыгыз...';
+      $('openAnswer').placeholder = isRussianFatiha
+        ? 'Напишите своими словами, чему научила вас сура…'
+        : (current.slug === 'mursalat'
+          ? 'Сүрәдән алган гыйбрәтегезне үз сүзләрегез белән языгыз...'
+          : 'Күркәм гамәл турында җавабыгыз...');
       return;
     }
     const item = current.questions[quizIndex];
-    const letters = ['А', 'Ә', 'Б'];
+    const letters = isRussianFatiha ? ['А', 'Б', 'В'] : ['А', 'Ә', 'Б'];
     $('quizQuestion').textContent = item.q;
     $('quizOptions').innerHTML = item.o.map((option, index) => `
       <label class="option">
@@ -236,7 +250,7 @@
     const mistakes = current.questions.length - correct;
     $('scoreText').textContent = `${correct} / ${current.questions.length}`;
     $('mistakeText').textContent = mistakes;
-    $('resultText').textContent = `${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Нәтиҗә һәм ачык җавап бу биттә күрсәтелә.`;
+    $('resultText').textContent = tr(`${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Нәтиҗә һәм ачык җавап бу биттә күрсәтелә.`, `${$('studentName').value.trim()} · ${$('studentGroup').value.trim()}. Результат и открытый ответ показаны на этой странице.`);
     $('openPreview').textContent = openText;
     $('sendResultBtn').disabled = false;
     $('sendResultBtn').classList.add('hidden');
@@ -250,7 +264,7 @@
   renderHome();
   applyCurrentSurah();
   if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = `${surahs.length} ДӘРЕС`;
-  fillGroupSelect('teacherGroup', 'Группу выберет ученик');
+  fillGroupSelect('teacherGroup', tr('Группу выберет ученик', 'Группу выберет ученик'));
   fillGroupSelect('studentGroup', 'Выберите группу');
   const presetGroup = params.get('group') || '';
   if ([...$('studentGroup').options].some(option => option.value === presetGroup && presetGroup)) {
@@ -261,10 +275,10 @@
     const link = lessonUrl();
     $('teacherLink').value = link;
     $('teacherLink').classList.remove('hidden');
-    $('copyNote').textContent = 'Сылтама әзер. Астагы юлдан күчереп алырга мөмкин.';
+    $('copyNote').textContent = tr('Сылтама әзер. Астагы юлдан күчереп алырга мөмкин.', 'Ссылка готова. Её можно скопировать из поля ниже.');
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(link).then(() => {
-        $('copyNote').textContent = 'Сылтама күчереп алынды.';
+        $('copyNote').textContent = tr('Сылтама күчереп алынды.', 'Ссылка скопирована.');
       }).catch(() => {});
     }
   });
@@ -303,7 +317,7 @@
     const name = $('studentName').value.trim();
     const group = $('studentGroup').value.trim();
     if (!name || !group) {
-      $('identityError').textContent = 'Исем-фамилияне языгыз һәм группаны сайлагыз.';
+      $('identityError').textContent = tr('Исем-фамилияне языгыз һәм группаны сайлагыз.', 'Напишите имя и фамилию и выберите группу.');
       $('identityError').classList.remove('hidden');
       return;
     }
@@ -329,7 +343,7 @@
       }
       const chosen = document.querySelector('input[name="choice"]:checked');
       if (!chosen) {
-        $('quizError').textContent = 'Тикшерү өчен бер җавапны сайлагыз.';
+        $('quizError').textContent = tr('Тикшерү өчен бер җавапны сайлагыз.', 'Выберите один ответ.');
         $('quizError').classList.remove('hidden');
         return;
       }
@@ -345,17 +359,17 @@
         if (index === selected && !isCorrect) option.classList.add('wrong');
       });
       $('quizFeedback').className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
-      $('feedbackTitle').textContent = isCorrect ? 'Дөрес җавап!' : 'Бу җавап дөрес түгел.';
+      $('feedbackTitle').textContent = isCorrect ? tr('Дөрес җавап!', 'Верно!') : tr('Бу җавап дөрес түгел.', 'Ответ неверный.');
       $('feedbackText').textContent = isCorrect
         ? item.basis
-        : `Дөрес җавап: ${item.o[item.a]}. ${item.basis}`;
-      $('nextQuizBtn').textContent = 'Алга';
+        : tr(`Дөрес җавап: ${item.o[item.a]}. ${item.basis}`, `Правильный ответ: ${item.o[item.a]} ${item.basis}`);
+      $('nextQuizBtn').textContent = tr('Алга', 'Далее');
       $('quizError').classList.add('hidden');
       return;
     }
     openText = $('openAnswer').value.trim();
     if (!openText) {
-      $('quizError').textContent = 'Соңгы сорауга җавап языгыз.';
+      $('quizError').textContent = tr('Соңгы сорауга җавап языгыз.', 'Напишите ответ на последний вопрос.');
       $('quizError').classList.remove('hidden');
       return;
     }
@@ -376,7 +390,7 @@
       studentName: $('studentName').value.trim(),
       group: $('studentGroup').value.trim(),
       surahSlug: current.slug,
-      surahTitle: current.title,
+      surahTitle: current.slug === 'fatiha' ? 'Әл Фатиха сүрәсе' : current.title,
       score,
       total: current.questions.length,
       durationSeconds: Math.min(86400, Math.max(1, Math.round((Date.now() - startedAt) / 1000))),
@@ -401,15 +415,15 @@
       const result = await response.json();
       if (!response.ok || !result.ok) throw new Error(result.error || 'send_failed');
       sent = true;
-      $('sendInstruction').textContent = 'Эшегез укытучы журналына теркәлде.';
+      $('sendInstruction').textContent = tr('Эшегез укытучы журналына теркәлде.', 'Ваша работа записана в журнале преподавателя.');
       $('sendInstruction').classList.remove('hidden');
       $('resultSendNote').textContent = '';
       button.classList.add('hidden');
     } catch {
       button.disabled = false;
-      button.textContent = 'Кабат җибәрергә';
+      button.textContent = tr('Кабат җибәрергә', 'Отправить ещё раз');
       button.classList.remove('hidden');
-      $('sendInstruction').textContent = 'Эшегез журналга теркәлмәде. Кабат җибәрергә кирәк.';
+      $('sendInstruction').textContent = tr('Эшегез журналга теркәлмәде. Кабат җибәрергә кирәк.', 'Работа не записана в журнале. Отправьте ещё раз.');
       $('sendInstruction').classList.remove('hidden');
       $('resultSendNote').textContent = '';
     } finally {
@@ -420,7 +434,7 @@
   $('sendResultBtn').addEventListener('click', sendResult);
 
   $('retryBtn').addEventListener('click', () => {
-    if (!sent && !confirm('Нәтиҗә әле укытучыга җибәрелмәде. Чыннан да кабат үтәргәме?')) return;
+    if (!sent && !confirm(tr('Нәтиҗә әле укытучыга җибәрелмәде. Чыннан да кабат үтәргәме?', 'Результат ещё не записан в журнале. Начать тест заново?'))) return;
     reviewIndex = 0;
     quizIndex = 0;
     quizAnswers = [];
