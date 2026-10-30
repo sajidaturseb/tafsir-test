@@ -54,6 +54,7 @@
   let startedAt = 0;
   let attemptId = '';
   let sent = false;
+  let sending = false;
   const resultsEndpoint = 'https://kxwhwmxzmtvueksyayvz.supabase.co/functions/v1/submit-tafsir-quiz';
 
   const $ = id => document.getElementById(id);
@@ -239,7 +240,8 @@
     $('openPreview').textContent = openText;
     $('sendResultBtn').disabled = false;
     $('sendResultBtn').classList.add('hidden');
-    $('sendInstruction').innerHTML = '<strong>Сез тестны үттегез.</strong> Нәтиҗә укытучы журналына җибәрелә…';
+    $('sendInstruction').textContent = '';
+    $('sendInstruction').classList.add('hidden');
     $('resultSendNote').textContent = '';
     show('result');
     void sendResult();
@@ -312,6 +314,7 @@
     startedAt = Date.now();
     attemptId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     sent = false;
+    sending = false;
     renderQuiz();
     show('quiz');
   });
@@ -361,10 +364,12 @@
 
   async function sendResult() {
     const button = $('sendResultBtn');
-    if (sent || button.disabled) return;
+    if (sent || sending) return;
+    sending = true;
     button.disabled = true;
-    button.textContent = 'Җибәрелә…';
-    $('resultSendNote').textContent = 'Нәтиҗә җибәрелә, бераз көтегез.';
+    $('sendInstruction').textContent = '';
+    $('sendInstruction').classList.add('hidden');
+    $('resultSendNote').textContent = '';
     const score = current.questions.reduce((sum, item, index) => sum + Number(quizAnswers[index] === item.a), 0);
     const payload = {
       attemptId,
@@ -384,25 +389,32 @@
       openQuestion: current.open,
       openAnswer: openText
     };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
     try {
       const response = await fetch(resultsEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
       const result = await response.json();
       if (!response.ok || !result.ok) throw new Error(result.error || 'send_failed');
       sent = true;
-      button.textContent = 'Җибәрелде';
-      $('sendInstruction').innerHTML = '<strong>Нәтиҗә җибәрелде.</strong> Ул укытучы журналында сакланды.';
-      $('resultSendNote').textContent = 'Башка бернәрсә эшләргә кирәкми.';
+      $('sendInstruction').textContent = 'Эшегез укытучы журналына теркәлде.';
+      $('sendInstruction').classList.remove('hidden');
+      $('resultSendNote').textContent = '';
       button.classList.add('hidden');
     } catch {
       button.disabled = false;
       button.textContent = 'Кабат җибәрергә';
       button.classList.remove('hidden');
-      $('sendInstruction').innerHTML = '<strong>Нәтиҗә әлегә җибәрелмәде.</strong> Кабат җибәрү төймәсенә басыгыз.';
-      $('resultSendNote').textContent = 'Нәтиҗә җибәрелмәде. Интернетны тикшереп, кабат басыгыз.';
+      $('sendInstruction').textContent = 'Эшегез журналга теркәлмәде. Кабат җибәрергә кирәк.';
+      $('sendInstruction').classList.remove('hidden');
+      $('resultSendNote').textContent = '';
+    } finally {
+      clearTimeout(timer);
+      sending = false;
     }
   }
   $('sendResultBtn').addEventListener('click', sendResult);
@@ -420,3 +432,4 @@
   if (requestedSlug && bySlug.has(requestedSlug)) show('intro');
   else show('home');
 })();
+
