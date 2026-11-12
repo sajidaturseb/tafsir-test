@@ -1,12 +1,22 @@
 (() => {
   'use strict';
 
-  const isRussianFatiha = document.body.dataset.sura === 'fatiha' && new URLSearchParams(location.search).get('lang') === 'ru';
-  const tr = (tt, ru) => isRussianFatiha ? ru : tt;
+  const russianSurahs = new Set(['fatiha', 'nas', 'ikhlas', 'falaq']);
+  const isRussianLesson = russianSurahs.has(document.body.dataset.sura) && new URLSearchParams(location.search).get('lang') === 'ru';
+  const tr = (tt, ru) => isRussianLesson ? ru : tt;
   const surahs = Array.isArray(window.SURAH_DATA)
     ? [...window.SURAH_DATA].sort((a, b) => a.order - b.order) : [];
-  if (isRussianFatiha && window.FATIHA_RU_DATA) {
-    Object.assign(surahs.find(item => item.slug === 'fatiha'), window.FATIHA_RU_DATA);
+  const originalTitles = new Map(surahs.map(item => [item.slug, item.title]));
+  if (isRussianLesson) {
+    for (const [slug, data] of Object.entries({
+      fatiha: window.FATIHA_RU_DATA,
+      nas: window.NAS_RU_DATA,
+      ikhlas: window.IKHLAS_RU_DATA,
+      falaq: window.FALAQ_RU_DATA
+    })) {
+      const item = surahs.find(candidate => candidate.slug === slug);
+      if (item && data) Object.assign(item, data);
+    }
   }
   const bySlug = new Map(surahs.map(item => [item.slug, item]));
   const tafsirFiles = {
@@ -93,7 +103,7 @@
     addBlock('Коръән уку мәктәбе', 10);
   }
   const screens = ['home', 'intro', 'review', 'identity', 'quiz', 'result'];
-  const stageNames = isRussianFatiha ? {
+  const stageNames = isRussianLesson ? {
     intro: 'Знакомство с уроком',
     review: 'Повторение по вопросам',
     identity: 'Данные ученика',
@@ -124,10 +134,10 @@
   function renderHome() {
     const list = document.querySelector('.surah-list');
     list.innerHTML = surahs.map(item => `
-      <a class="surah-card" href="surah-${encodeURIComponent(item.slug)}.html">
+      <a class="surah-card" href="surah-${encodeURIComponent(item.slug)}.html${isRussianLesson && russianSurahs.has(item.slug) ? '?lang=ru' : ''}">
         <span class="num">${item.lessonLabel || item.order}</span>
         <span><strong>${item.title}</strong><span>${item.subtitle}</span></span>
-        <span class="go">Ачарга</span>
+        <span class="go">${tr('Ачарга', 'Открыть')}</span>
       </a>`).join('');
     $('teacherSurah').innerHTML = surahs.map(item =>
       `<option value="${item.slug}">${item.lessonLabel || item.order}. ${item.title}</option>`
@@ -150,12 +160,12 @@
   async function loadTafsir() {
     const host = $('tafsirText');
     if (!host) return;
-    const file = isRussianFatiha ? 'fatiha-tafsir-ru.md' : tafsirFiles[current.slug];
+    const file = isRussianLesson ? `${current.slug}-tafsir-ru.md` : tafsirFiles[current.slug];
     host.classList.toggle('hidden', !file);
     if (!file) return;
     host.textContent = tr('Сүрә аңлатмасы йөкләнә…', 'Загружается пояснение к суре…');
     try {
-      const response = await fetch(current.slug === 'fatiha' ? `${file}?v=20261030b` : file);
+      const response = await fetch(`${file}?v=20261112ru4`);
       if (!response.ok) throw new Error('tafsir_unavailable');
       renderTafsir(await response.text(), host);
     } catch {
@@ -205,7 +215,7 @@
     const url = new URL(`surah-${encodeURIComponent($('teacherSurah').value)}.html`, document.baseURI);
     const group = $('teacherGroup').value.trim();
     if (group) url.searchParams.set('group', group);
-    if (isRussianFatiha && $('teacherSurah').value === 'fatiha') url.searchParams.set('lang', 'ru');
+    if (isRussianLesson && russianSurahs.has($('teacherSurah').value)) url.searchParams.set('lang', 'ru');
     return url.toString();
   }
 
@@ -243,7 +253,7 @@
     if (isOpen) {
       $('quizQuestion').textContent = current.open;
       $('openAnswer').value = openText;
-      $('openAnswer').placeholder = isRussianFatiha
+      $('openAnswer').placeholder = isRussianLesson
         ? 'Напишите своими словами, чему научила вас сура…'
         : (current.slug === 'mursalat'
           ? 'Сүрәдән алган гыйбрәтегезне үз сүзләрегез белән языгыз...'
@@ -251,7 +261,7 @@
       return;
     }
     const item = current.questions[quizIndex];
-    const letters = isRussianFatiha ? ['А', 'Б', 'В'] : ['А', 'Ә', 'Б'];
+    const letters = isRussianLesson ? ['А', 'Б', 'В'] : ['А', 'Ә', 'Б'];
     $('quizQuestion').textContent = item.q;
     $('quizOptions').innerHTML = item.o.map((option, index) => `
       <label class="option">
@@ -278,7 +288,7 @@
 
   renderHome();
   applyCurrentSurah();
-  if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = `${surahs.length} ДӘРЕС`;
+  if (!requestedSlug || !bySlug.has(requestedSlug)) $('coursePill').textContent = tr(`${surahs.length} ДӘРЕС`, `${surahs.length} УРОКОВ`);
   fillGroupSelect('teacherGroup', tr('Группу выберет ученик', 'Группу выберет ученик'));
   fillGroupSelect('studentGroup', 'Выберите группу');
   const presetGroup = params.get('group') || '';
@@ -405,7 +415,7 @@
       studentName: $('studentName').value.trim(),
       group: $('studentGroup').value.trim(),
       surahSlug: current.slug,
-      surahTitle: current.slug === 'fatiha' ? 'Әл Фатиха сүрәсе' : current.title,
+      surahTitle: originalTitles.get(current.slug) || current.title,
       score,
       total: current.questions.length,
       durationSeconds: Math.min(86400, Math.max(1, Math.round((Date.now() - startedAt) / 1000))),
