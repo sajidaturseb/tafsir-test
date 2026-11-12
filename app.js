@@ -15,6 +15,8 @@
     'insan-1': 'insan-1-tafsir.md',
     'insan-2': 'insan-2-tafsir.md',
     'insan-3': 'insan-3-tafsir.md',
+    'qiyamah-1': 'qiyamah-1-tafsir.md',
+    'qiyamah-2': 'qiyamah-2-tafsir.md',
     nas: 'nas-tafsir.md',
     ikhlas: 'ikhlas-tafsir.md',
     falaq: 'falaq-tafsir.md',
@@ -41,6 +43,7 @@
   const tafsirVerseCounts = {
     fatiha: 7, mursalat: 50, nas: 6, ikhlas: 4, falaq: 5, naba: 40, alaq: 19,
     'insan-1': 10, 'insan-2': 12, 'insan-3': 9,
+    'qiyamah-1': 19, 'qiyamah-2': 21,
     masad: 5, nasr: 3, kafirun: 6, kawthar: 3, maun: 7, quraysh: 4,
     fil: 5, humaza: 9, asr: 3, takathur: 8, qaria: 11, adiyat: 11,
     zalzala: 8, bayyina: 8, qadr: 5, sharh: 8, duha: 11, layl: 21,
